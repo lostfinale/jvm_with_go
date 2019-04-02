@@ -2,7 +2,7 @@ package rtda
 
 import (
 	"math"
-	"jvmgo/ch06/heap"
+	"jvmgo/ch06/rtda/heap"
 )
 
 //操作数栈
