@@ -1,6 +1,9 @@
 package rtda
 
-import "math"
+import (
+	"math"
+	"jvmgo/ch06/heap"
+)
 
 //操作数栈
 
@@ -78,12 +81,12 @@ func (os *OperandStack) PopDouble() float64 {
 	return math.Float64frombits(bits)
 }
 
-func (os *OperandStack) PushRef(ref *Object) {
+func (os *OperandStack) PushRef(ref *heap.Object) {
 	os.slots[os.size].ref = ref
 	os.size++
 }
 
-func (os *OperandStack) PopRef() *Object {
+func (os *OperandStack) PopRef() *heap.Object {
 	os.size--
 	ref := os.slots[os.size].ref
 	//弹出引用后，把Slot 结构体的 ref 字段设置成 nil
