@@ -94,3 +94,7 @@ func (os *OperandStack) PopRef() *heap.Object {
 	os.slots[os.size].ref = nil
 	return ref
 }
+
+func (os *OperandStack) GetRefFromTop(n uint) *heap.Object {
+	return os.slots[os.size-1-n].ref
+}

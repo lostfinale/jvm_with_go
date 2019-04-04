@@ -37,6 +37,13 @@ func (t *Thread) CurrentFrame() *Frame {
 	return t.stack.top()
 }
 
+
+//类似当前帧
+func (t *Thread) TopFrame() *Frame {
+	return t.stack.top()
+}
+
+
 func (t *Thread) PC() int {
 	return t.pc
 }
