@@ -54,3 +54,7 @@ func (t *Thread) SetPC(pc int) {
 func (t *Thread) NewFrame(method *heap.Method) *Frame {
 	return newFrame(t, method)
 }
+
+func (t *Thread) IsStackEmpty() bool {
+	return t.stack.isEmpty()
+}

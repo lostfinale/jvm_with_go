@@ -43,6 +43,7 @@ type Class struct {
 	staticSlotCount uint //类变量占据的空间大小
 
 	staticVars Slots //静态变量列表
+	initStarted bool //是否已初始化
 }
 
 func newClass(cf *classfile.ClassFile) *Class {
@@ -130,4 +131,18 @@ func (self *Class) getStaticMethod(name, descriptor string) *Method {
 	}
 	return nil
 }
+func (self *Class) Name() string {
+	return self.name
+}
 
+func (self *Class) InitStarted() bool {
+	return self.initStarted
+}
+
+func (self *Class) StartInit() {
+	self.initStarted = true
+}
+
+func (self *Class) GetClinitMethod() *Method {
+return self.getStaticMethod("<clinit>", "()V")
+}

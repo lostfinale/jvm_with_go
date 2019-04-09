@@ -70,3 +70,7 @@ func (stack *Stack) pop() *Frame {
 	return top
 }
 
+func (stack *Stack) isEmpty() bool {
+	return stack._top == nil
+}
+

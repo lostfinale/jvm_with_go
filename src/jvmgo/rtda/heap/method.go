@@ -36,6 +36,19 @@ func (self *Method) copyAttributes(cfMethod *classfile.MemberInfo) {
 
 func (self *Method) calcArgSlotCount() {
 	parsedDescriptor := parseMethodDescriptor(self.descriptor)
+	for _, paramType := range parsedDescriptor.parameterTypes {
+		self.argSlotCount++
+		if paramType == "J" || paramType == "D" {
+			//Long和Double占两位
+			self.argSlotCount++
+		}
+
+	}
+	if !self.IsStatic(){
+		//非静态方法还有个this参数
+		self.argSlotCount++
+	}
+
 
 }
 

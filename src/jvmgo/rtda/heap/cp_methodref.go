@@ -18,12 +18,12 @@ func newMethodRef(cp *ConstantPool, refInfo *classfile.ConstantMethodRefInfo) * 
 
 func (self *MethodRef) ResolvedMethod() *Method {
 	if self.method == nil {
-		return self.resolveMethodRef()
+		self.resolveMethodRef()
 	}
 	return self.method
 }
 
-func (self *MethodRef) resolveMethodRef() *Method {
+func (self *MethodRef) resolveMethodRef()  {
 
 	//找到调用者的class
 	d := self.cp.class
