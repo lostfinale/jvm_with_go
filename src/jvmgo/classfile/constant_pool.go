@@ -12,6 +12,7 @@ func readConstantPool(reader *ClassReader) ConstantPool {
 
 	//索引从1开始，0号位置是废弃不用的
 	for i := 1; i < cpCount; i++ {
+		//fmt.Printf("读取常量:%d,reader.len:%d, reader.cap:%d\n", i, len(reader.data), cap(reader.data))
 		cp[i] = readConstantInfo(reader, cp)
 		//fmt.Printf("读取常量index:[%d]->[%T]:[%v]\n", i, cp[i], cp[i] )
 		switch cp[i].(type) {
@@ -19,6 +20,7 @@ func readConstantPool(reader *ClassReader) ConstantPool {
 			//Long和Double占两个常量索引
 			i++
 		}
+
 	}
 
 

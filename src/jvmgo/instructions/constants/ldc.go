@@ -3,6 +3,7 @@ package constants
 import (
 	"jvmgo/instructions/base"
 	"jvmgo/rtda"
+	"jvmgo/rtda/heap"
 )
 
 // ldc 和 ldc_w 指令的区别仅在于操作数的宽度
@@ -31,12 +32,15 @@ func (self *LDC2_W) Execute(frame *rtda.Frame) {
 
 func _ldc(frame *rtda.Frame, index uint) {
 	stack := frame.OperandStack()
-	cp := frame.Method().Class().ConstantPool()
-	c := cp.GetConstant(index)
+	class := frame.Method().Class()
+	c := class.ConstantPool().GetConstant(index)
+
 	switch c.(type) {
 	case int32: stack.PushInt(c.(int32))
 	case float32: stack.PushFloat(c.(float32))
-		// case string:  在第8 章实现
+	case string:
+		internedStr := heap.JString(class.Loader(), c.(string))
+		stack.PushRef(internedStr)
 		// case *heap.ClassRef:  在第9 章实现
 	default: panic("todo: ldc!")
 	}

@@ -1,5 +1,7 @@
 package classfile
 
+import "fmt"
+
 /*
 	cp_info {
 		u1 tag;
@@ -57,19 +59,20 @@ func newConstantInfo(tag uint8, cp ConstantPool) ConstantInfo{
 		return &ConstantClassInfo{cp:cp}
 	case CONSTANT_Fieldref:
 		return &ConstantFieldRefInfo{ConstantMemberRefInfo{cp:cp}}
-	case CONSTANT_InterfaceMethodref:
-		return & ConstantInterfaceMethodRefInfo{ConstantMemberRefInfo{cp:cp}}
 	case CONSTANT_Methodref:
 		return &ConstantMethodRefInfo{ConstantMemberRefInfo{cp:cp}}
+	case CONSTANT_InterfaceMethodref:
+		return & ConstantInterfaceMethodRefInfo{ConstantMemberRefInfo{cp:cp}}
 	case CONSTANT_NameAndType:
 		return &ConstantNameAndTypeInfo{}
 	case CONSTANT_MethodType:
-		return &ConstantMethodRefInfo{}
+		return &ConstantMethodTypeInfo{}
 	case CONSTANT_MethodHandle:
 		return &ConstantMethodHandleInfo{}
 	case CONSTANT_InvokeDynamic:
 		return &ConstantInvokeDynamicInfo{}
 	default:
+		fmt.Println("tag:", tag)
 		panic("java.lang.ClassFormatError: constant pool tag!")
 	}
 }

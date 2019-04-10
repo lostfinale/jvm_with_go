@@ -24,13 +24,35 @@ func (self *ClassLoader) LoadClass(name string) *Class {
 	if class, ok := self.classMap[name]; ok {
 		return class
 	}
+
+	if name[0] == '[' {
+		return self.loadArrayClass(name)
+	}
 	return self.loadNonArrayClass(name)
+}
+
+func (self *ClassLoader) loadArrayClass(name string) *Class {
+	class := &Class {
+		accessFlags : ACC_PUBLIC,
+		name: name,
+		loader: self,
+		initStarted: true,
+		superClass : self.LoadClass("java/lang/Object"),
+		interfaces:[]*Class {
+			self.LoadClass("java/lang/Cloneable"),
+			self.LoadClass("java/io/Serializable"),
+		},
+
+	}
+	self.classMap[name] = class
+	return class
 }
 
 
 //类的加载大致可以分为三个步骤：首先找到 class 文件并把数据读取到内存；
 //然后解析class 文件，生成虚拟机可以使用的类数据，并放入方法区；最后进行链接。
 func (self *ClassLoader) loadNonArrayClass(name string) *Class {
+	//fmt.Println("name:" ,name)
 	data, entry := self.readClass(name)
 	class := self.defineClass(data)
 	link(class)
@@ -178,9 +200,13 @@ func initStaticFinalVar(class *Class, field *Field) {
 			val := cp.GetConstant(cpIndex).(float64)
 			vars.SetDouble(slotId, val)
 		case "Ljava/lang/String;":
-			panic("todo")
+			goStr := cp.GetConstant(cpIndex).(string)
+			jStr := JString(class.Loader(), goStr)
+			vars.SetRef(slotId, jStr)
 		}
 	}
 }
+
+
 
 

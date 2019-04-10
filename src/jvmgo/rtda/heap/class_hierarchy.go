@@ -3,18 +3,40 @@ package heap
 // jvms8 6.5.instanceof
 // jvms8 6.5.checkcast
 
-//other是否能够赋值给自己
+//other是否能够强制转换给自己（赋值）
 func (self *Class) isAssignableFrom(other *Class) bool {
 	s, t := other, self
-
 	if s == t {
 		return true
 	}
 
-	if !t.IsInterface() {
-		return s.IsSubClassOf(t)
+
+	if !s.IsArray() {
+		if !s.IsInterface() {
+			if !t.IsInterface() {
+				return s.IsSubClassOf(t)
+			} else {
+				return s.IsImplements(t)
+			}
+		} else {
+			if !t.IsInterface() {
+				return t.isJlObject()
+			} else {
+				return t.IsSubInterfaceOf(s)
+			}
+		}
 	} else {
-		return s.IsImplements(t)
+		if !t.IsArray() {
+			if !t.IsInterface() {
+				return t.isJlObject()
+			} else {
+				return t.isJlCloneable() || t.isJioSerializable()
+			}
+		} else {
+			sc := s.ComponentClass()
+			tc := t.ComponentClass()
+			return sc == tc || tc.isAssignableFrom(sc)
+		}
 	}
 }
 
@@ -51,7 +73,4 @@ func (self *Class) IsSubInterfaceOf(iface *Class) bool {
 }
 
 
-// c extends self
-func (self *Class) IsSuperClassOf(other *Class) bool {
-	return other.IsSubClassOf(self)
-}
+

@@ -60,6 +60,10 @@ func _println(stack *rtda.OperandStack, descriptor string) {
 	case "(F)V": fmt.Printf("%v\n", stack.PopFloat())
 	case "(J)V": fmt.Printf("%v\n", stack.PopLong())
 	case "(D)V": fmt.Printf("%v\n", stack.PopDouble())
+	case "(Ljava/lang/String;)V":
+		jStr := stack.PopRef()
+		goStr := heap.GoString(jStr)
+		fmt.Println(goStr)
 	default: panic("println: " + descriptor)
 	}
 	stack.PopRef()
