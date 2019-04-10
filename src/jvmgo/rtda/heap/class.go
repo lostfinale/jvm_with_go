@@ -44,6 +44,8 @@ type Class struct {
 
 	staticVars Slots //静态变量列表
 	initStarted bool //是否已初始化
+
+	jClass *Object //java.lang.Class实例
 }
 
 func newClass(cf *classfile.ClassFile) *Class {
@@ -68,6 +70,17 @@ func newObject(class *Class) *Object {
 		class:  class,
 		data: newSlots(class.instanceSlotCount),
 	}
+}
+
+
+func (self *Class) GetRefVar(fieldName, fieldDescriptor string) *Object {
+	field := self.getField(fieldName, fieldDescriptor, true)
+	return self.staticVars.GetRef(field.slotId)
+}
+
+func (self *Class) SetRefVar(fieldName, fieldDescriptor string, ref *Object) {
+	field := self.getField(fieldName, fieldDescriptor, true)
+	self.staticVars.SetRef(field.slotId, ref)
 }
 
 func (self *Class) IsPublic() bool {
@@ -183,6 +196,39 @@ func (self *Class) getField(name, descriptor string, isStatic bool) *Field {
 			if field.IsStatic() == isStatic &&
 				field.name == name && field.descriptor == descriptor {
 				return field
+			}
+		}
+	}
+	return nil
+}
+
+func (self *Class) JClass() *Object {
+	return self.jClass
+}
+
+
+
+func (self *Class) JavaName() string {
+	return strings.Replace(self.name, "/", ".", -1)
+}
+
+func (self *Class) IsPrimitive() bool {
+	_, ok := primitiveTypes[self.name]
+	return ok
+}
+
+func (self *Class) GetInstanceMethod(name, descriptor string) *Method {
+	return self.getMethod(name, descriptor, false)
+}
+
+func (self *Class) getMethod(name, descriptor string, isStatic bool) *Method {
+	for c := self; c != nil; c = c.superClass {
+		for _, method := range c.methods {
+			if method.IsStatic() == isStatic &&
+				method.name == name &&
+				method.descriptor == descriptor {
+
+				return method
 			}
 		}
 	}

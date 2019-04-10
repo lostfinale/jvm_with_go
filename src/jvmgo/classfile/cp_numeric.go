@@ -1,6 +1,6 @@
 package classfile
 
-
+import "math"
 
 //-------------int----------------
 /**
@@ -78,7 +78,7 @@ type ConstantDoubleInfo struct {
 
 func (ci * ConstantDoubleInfo) readInfo(reader *ClassReader) {
 	bytes := reader.readUint64()
-	ci.val = float64(bytes)
+	ci.val = math.Float64frombits(bytes)
 }
 
 func (ci *ConstantDoubleInfo) Value() float64{

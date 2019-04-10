@@ -14,7 +14,7 @@ type IINC struct {
 
 func (i *IINC) FetchOperands(reader *base.BytecodeReader) {
 	i.Index = uint(reader.ReadUint8())
-	i.Const = int32(reader.ReadUint8())
+	i.Const = int32(reader.ReadInt8())
 }
 
 

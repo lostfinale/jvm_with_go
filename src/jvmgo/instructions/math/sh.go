@@ -44,7 +44,7 @@ type IUSHR struct {
 func (sh * IUSHR) Execute(frame *rtda.Frame) {
 	stack := frame.OperandStack()
 	v2 := stack.PopInt()
-	v1 := stack.PopLong()
+	v1 := stack.PopInt()
 	s := uint32(v2) & 0x3f
 	//Go 语言并没有 Java 语言中的 >>> 运算符，为了达到无符号位移的目的，
 	//需要先把 v1 转成无符号整数，位移操作之后，再转回有符号整数

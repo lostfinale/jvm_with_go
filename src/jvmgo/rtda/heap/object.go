@@ -7,6 +7,8 @@ type Object struct {
 	//fields Slots //存放实例变量
 	data interface{}
 
+	extra interface{}
+
 }
 
 func (self *Object) Class() *Class {
@@ -18,6 +20,13 @@ func (self *Object) Fields() Slots {
 
 func (self *Object) IsInstanceOf(class *Class) bool {
 	return class.isAssignableFrom(self.class)
+}
+
+func (self *Object) Extra() interface{} {
+	return self.extra
+}
+func (self *Object) SetExtra(extra interface{}) {
+	self.extra = extra
 }
 
 func (self *Object) SetRefVar(name, descriptor string, ref *Object) {
