@@ -12,6 +12,7 @@ func init() {
 	native.Register("java/lang/System", "arraycopy",
 		"(Ljava/lang/Object;ILjava/lang/Object;II)V", arraycopy)
 	native.Register("java/lang/System", "initProperties", "(Ljava/util/Properties;)Ljava/util/Properties;", initProperties)
+	native.Register("java/lang/System", "setOut0", "(Ljava/io/PrintStream;)V", setOut0)
 
 }
 
@@ -102,4 +103,10 @@ func _sysProps() map[string]string {
 		"sun.stdout.encoding":  "UTF-8",
 		"sun.stderr.encoding":  "UTF-8",
 	}
+}
+
+func setOut0(frame *rtda.Frame) {
+	out := frame.LocalVars().GetRef(0)
+	sysClass := frame.Method().Class()
+	sysClass.SetRefVar("out", "Ljava/io/PrintStream;", out)
 }
