@@ -24,4 +24,8 @@ func initialize(frame *rtda.Frame) {
 	setPropMethod := propsClass.GetInstanceMethod("setProperty",
 		"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;")
 	base.InvokeMethod(frame, setPropMethod)
+	/*classLoader := frame.Method().Class().Loader()
+	jlSysClass := classLoader.LoadClass("java/lang/System")
+	initSysClass := jlSysClass.GetStaticMethod("initializeSystemClass", "()V")
+	base.InvokeMethod(frame, initSysClass)*/
 }

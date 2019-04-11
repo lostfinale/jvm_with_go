@@ -12,7 +12,7 @@ type Cmd struct {
 	verboseClassFlag bool
 	verboseInstFlag bool
 	cpOption string
-	XjareOption string
+	XjreOption string
 	class string
 	args []string
 }
@@ -33,7 +33,7 @@ func parseCmd() *Cmd {
 	flag.BoolVar(&cmd.verboseInstFlag, "verbose:inst", false, "enable verbose output")
 	flag.StringVar(&cmd.cpOption, "classpath", "", "classpath")
 	flag.StringVar(&cmd.cpOption, "cp", "", "classpath")
-	flag.StringVar(&cmd.XjareOption, "Xjre", "", "path to jre")
+	flag.StringVar(&cmd.XjreOption, "Xjre", "", "path to jre")
 	flag.Parse()
 
 	args := flag.Args()

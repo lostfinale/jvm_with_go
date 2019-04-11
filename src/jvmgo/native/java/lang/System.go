@@ -4,11 +4,15 @@ import (
 	"jvmgo/native"
 	"jvmgo/rtda"
 	"jvmgo/rtda/heap"
+	"jvmgo/instructions/base"
+	"runtime"
 )
 
 func init() {
 	native.Register("java/lang/System", "arraycopy",
 		"(Ljava/lang/Object;ILjava/lang/Object;II)V", arraycopy)
+	native.Register("java/lang/System", "initProperties", "(Ljava/util/Properties;)Ljava/util/Properties;", initProperties)
+
 }
 
 
@@ -49,4 +53,53 @@ func checkArrayCopy(src, dest *heap.Object) bool {
 		return srcClass == destClass
 	}
 	return true
+}
+
+func initProperties(frame *rtda.Frame) {
+	vars := frame.LocalVars()
+	props := vars.GetRef(0)
+
+	stack := frame.OperandStack()
+	stack.PushRef(props)
+
+	// public synchronized Object setProperty(String key, String value)
+	setPropMethod := props.Class().GetInstanceMethod("setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;")
+	thread := frame.Thread()
+	for key, val := range _sysProps() {
+		jKey := heap.JString(frame.Method().Class().Loader(), key)
+		jVal := heap.JString(frame.Method().Class().Loader(), val)
+		ops := rtda.NewOperandStack(3)
+		ops.PushRef(props)
+		ops.PushRef(jKey)
+		ops.PushRef(jVal)
+		shimFrame := rtda.NewShimFrame(thread, ops)
+		thread.PushFrame(shimFrame)
+
+		base.InvokeMethod(shimFrame, setPropMethod)
+	}
+}
+
+func _sysProps() map[string]string {
+	return map[string]string{
+		"java.version":         "1.8.0",
+		"java.vendor":          "jvm.go",
+		"java.vendor.url":      "https://github.com/zxh0/jvm.go",
+		"java.home":            "todo",
+		"java.class.version":   "52.0",
+		"java.class.path":      "todo",
+		"java.awt.graphicsenv": "sun.awt.CGraphicsEnvironment",
+		"os.name":              runtime.GOOS,   // todo
+		"os.arch":              runtime.GOARCH, // todo
+		"os.version":           "",             // todo
+		"file.separator":       "/",            // todo os.PathSeparator
+		"path.separator":       ":",            // todo os.PathListSeparator
+		"line.separator":       "\n",           // todo
+		"user.name":            "",             // todo
+		"user.home":            "",             // todo
+		"user.dir":             ".",            // todo
+		"user.country":         "CN",           // todo
+		"file.encoding":        "UTF-8",
+		"sun.stdout.encoding":  "UTF-8",
+		"sun.stderr.encoding":  "UTF-8",
+	}
 }

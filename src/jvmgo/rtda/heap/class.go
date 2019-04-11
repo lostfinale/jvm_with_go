@@ -41,6 +41,7 @@ type Class struct {
 	interfaces []*Class
 	instanceSlotCount uint //实例变量占据的空间大小
 	staticSlotCount uint //类变量占据的空间大小
+	sourceFile        string
 
 	staticVars Slots //静态变量列表
 	initStarted bool //是否已初始化
@@ -54,12 +55,19 @@ func newClass(cf *classfile.ClassFile) *Class {
 	class.name = cf.ClassName()
 	class.superClassName = cf.SuperClassName()
 	class.interfaceNames = cf.InterfaceName()
-	class.constantPool = newConstantPool(class, cf.ConstantPool())//todo
-	class.fields = newFields(class, cf.Fields())//todo
-	class.methods = newMethods(class, cf.Methods())//todo
+	class.constantPool = newConstantPool(class, cf.ConstantPool())
+	class.fields = newFields(class, cf.Fields())
+	class.methods = newMethods(class, cf.Methods())
+	class.sourceFile = getSourceFile(cf)
 	return class
 }
 
+func getSourceFile(cf *classfile.ClassFile) string {
+	if sfAttr := cf.SourceFileAttribute(); sfAttr != nil {
+		return sfAttr.FileName()
+	}
+	return "Unknown" // todo
+}
 
 func (self *Class) NewObject() *Object {
 	return newObject(self)
@@ -206,7 +214,9 @@ func (self *Class) JClass() *Object {
 	return self.jClass
 }
 
-
+func (self *Class) SourceFile() string {
+	return self.sourceFile
+}
 
 func (self *Class) JavaName() string {
 	return strings.Replace(self.name, "/", ".", -1)
@@ -233,4 +243,8 @@ func (self *Class) getMethod(name, descriptor string, isStatic bool) *Method {
 		}
 	}
 	return nil
+}
+
+func (self *Class) GetStaticMethod(name, descriptor string) *Method {
+	return self.getMethod(name, descriptor, true)
 }

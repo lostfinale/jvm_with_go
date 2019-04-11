@@ -25,7 +25,7 @@ func (self *ConstantPool) GetConstant(index uint) Constant {
 func newConstantPool(class *Class, cfCp classfile.ConstantPool) *ConstantPool{
 	cpCount := len(cfCp)
 	consts := make([]Constant, cpCount)
-	//fmt.Println(class.name)
+	//fmt.Println(class.name + ":", cpCount)
 	rtCp := &ConstantPool{class, consts}
 
 	for i := 1; i < cpCount; i++ {

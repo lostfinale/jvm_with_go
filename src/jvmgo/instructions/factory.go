@@ -164,7 +164,7 @@ var (
 	areturn = &ARETURN{}
 	_return = &RETURN{}
 	arraylength   = &ARRAY_LENGTH{}
-	// athrow        = &ATHROW{}
+	athrow        = &ATHROW{}
 	// monitorenter  = &MONITOR_ENTER{}
 	// monitorexit   = &MONITOR_EXIT{}
 	invoke_native = &INVOKE_NATIVE{}
@@ -554,8 +554,8 @@ func NewInstruction(opcode byte) Instruction {
 		return &ANEW_ARRAY{}
 	case 0xbe:
 		return arraylength
-	//case 0xbf:
-	// 	return athrow
+	case 0xbf:
+		return athrow
 	 case 0xc0:
 		return &CHECK_CAST{}
 	 case 0xc1:

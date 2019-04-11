@@ -8,6 +8,8 @@ type Method struct {
 	maxLocals uint //局部变量表大小 值是由 Java 编译器计算好的
 	code []byte  // code 字段存放方法字节码
 	argSlotCount uint //
+	lineNumberTable *classfile.LineNumberTableAttribute
+	exceptionTable ExceptionTable
 }
 
 func newMethods(class *Class, cfMethods []*classfile.MemberInfo) []*Method {
@@ -53,6 +55,8 @@ func (self *Method) copyAttributes(cfMethod *classfile.MemberInfo) {
 		self.maxStack = codeArr.MaxStack()
 		self.maxLocals = codeArr.MaxLocals()
 		self.code = codeArr.Code()
+		self.lineNumberTable = codeArr.LineNumberTableAttribute()
+		self.exceptionTable = newExceptionTable(codeArr.ExceptionTable(), self.class.constantPool)
 	}
 }
 
@@ -71,6 +75,14 @@ func (self *Method) calcArgSlotCount(paramTypes []string) {
 	}
 
 
+}
+
+func (self *Method) FindExceptionHandler(exClass *Class, pc int) int{
+	handler := self.exceptionTable.findExceptionHandler(exClass, pc)
+	if handler != nil {
+		return handler.handlerPc
+	}
+	return -1
 }
 
 func (self *Method) IsSynchronized() bool {
@@ -114,4 +126,15 @@ func (self *Method) Code() []byte {
 
 func (self *Method) ArgSlotCount() uint {
 	return self.argSlotCount
+}
+
+
+func (self *Method) GetLineNumber(pc int) int {
+	if self.IsNative() {
+		return -2
+	}
+	if self.lineNumberTable == nil {
+		return -1
+	}
+	return self.lineNumberTable.GetLineNumber(pc)
 }
